@@ -12,10 +12,8 @@ import (
 func main() {
 	data.ConectarPostgres()
 
-	err := data.DB.AutoMigrate(&models.Rol{})
-	if err != nil {
-		log.Fatal("Error al migrar modelo Rol:", err)
-	}
+	data.DB.AutoMigrate(&models.Rol{})
+	data.DB.AutoMigrate(&models.Usuario{})
 
 	rutas := routes.InitRouter()
 	log.Fatal(http.ListenAndServe(":8080", rutas))
