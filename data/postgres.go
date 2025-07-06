@@ -11,11 +11,10 @@ var CONNECTION_STRING = "host=localhost user=postgres password=1234 dbname=api_g
 var DB *gorm.DB
 
 func ConectarPostgres() {
-	var error error
-	DB, error = gorm.Open(postgres.Open(CONNECTION_STRING), &gorm.Config{})
-	if error != nil {
-		log.Fatal("Error de conexion a la base de datos", error)
-	} else {
-		log.Println("Conectado a la BD")
+	var err error
+	DB, err = gorm.Open(postgres.Open(CONNECTION_STRING), &gorm.Config{})
+	if err != nil {
+		log.Fatal("Error de conexión a la base de datos:", err)
 	}
+	log.Println("Conectado a la BD")
 }
