@@ -7,9 +7,14 @@ import (
 	"github.com/filosocode/practicagolang/data"
 	"github.com/filosocode/practicagolang/models"
 	"github.com/filosocode/practicagolang/routes"
+	"github.com/joho/godotenv"
 )
 
 func main() {
+	if err := godotenv.Load(); err != nil {
+		log.Fatal("Error al cargar el archivo .env:", err)
+	}
+
 	data.ConectarPostgres()
 
 	data.DB.AutoMigrate(&models.Rol{})

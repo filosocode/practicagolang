@@ -12,9 +12,10 @@ type Usuario struct {
 	gorm.Model
 	ID       uint64 `gorm:"primary_key;autoIncrement" json:"id"`
 	Nombre   string `gorm:"unique;not null" json:"nombre"`
-	Correo   string `gorm:"size:100;unique;not null" json:"Email"`
-	Password string `gorm:"default:true" json:"password"`
+	Correo   string `gorm:"size:100;unique;not null" json:"correo"`
+	Password string `json:"-" gorm:"default:true"`
 	RolId    uint64 `json:"rol_id"`
+	Rol      Rol    `json:"rol"`
 }
 
 func (Usuario) TableName() string {

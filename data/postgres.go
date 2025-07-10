@@ -2,19 +2,20 @@ package data
 
 import (
 	"log"
+	"os"
 
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 )
 
-var CONNECTION_STRING = "host=localhost user=postgres password=1234 dbname=api_golang port=5433 sslmode=disable TimeZone=America/Bogota"
 var DB *gorm.DB
 
 func ConectarPostgres() {
-	var err error
-	DB, err = gorm.Open(postgres.Open(CONNECTION_STRING), &gorm.Config{})
-	if err != nil {
-		log.Fatal("Error de conexión a la base de datos:", err)
+
+	var error error
+	DB, error = gorm.Open(postgres.Open(os.Getenv("CONNECTION_STRING")), &gorm.Config{})
+	if error != nil {
+		log.Fatal("Error de conexión a la base de datos:", error)
 	}
 	log.Println("Conectado a la BD")
 }

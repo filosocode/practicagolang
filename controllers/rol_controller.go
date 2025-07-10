@@ -56,6 +56,56 @@ func NewRol(w http.ResponseWriter, r *http.Request) {
 	})
 }
 
+func UpdateRol(w http.ResponseWriter, r *http.Request) {
+	var rol models.Rol
+	w.Header().Set("Content -Type", "application/json")
+	params := mux.Vars(r)
+	id := params["id"]
+
+	if err := json.NewDecoder(r.Body).Decode(&rol); err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+
+		json.NewEncoder(w).Encode(utils.Respuesta{
+			Msg:        "Error al decodificar la solicitud",
+			StatusCode: http.StatusBadRequest,
+			Data:       err.Error(),
+		})
+		return
+	}
+
+	var rolExistente models.Rol
+	if err := data.DB.First(&rolExistente, id).Error; err != nil {
+		w.WriteHeader(http.StatusNotFound)
+		json.NewEncoder(w).Encode(utils.Respuesta{
+			Msg:        "Rol no encontrado",
+			StatusCode: http.StatusNotFound,
+			Data:       err.Error(),
+		})
+		return
+	}
+
+	rolExistente.Nombre = rol.Nombre
+	rolExistente.Activo = rol.Activo
+	if err := data.DB.Save(&rolExistente).Error; err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		json.NewEncoder(w).Encode(utils.Respuesta{
+			Msg:        "Error al actualizar el rol",
+			StatusCode: http.StatusInternalServerError,
+			Data:       err.Error(),
+		})
+		return
+	}
+
+	respuesta := utils.Respuesta{
+		Msg:        "Rol actualizado con exito",
+		StatusCode: http.StatusOK,
+		Data:       rolExistente,
+	}
+
+	json.NewEncoder(w).Encode(&respuesta)
+
+}
+
 func GetRol(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	params := mux.Vars(r)
@@ -75,7 +125,7 @@ func GetRol(w http.ResponseWriter, r *http.Request) {
 	data.DB.Model(&rol).Association("Usuarios").Find(&rol.Usuarios)
 	respuesta := utils.Respuesta{
 		Msg:        "Rol encontrado",
-		StatusCode: http.StatusAccepted,
+		StatusCode: http.StatusOK,
 		Data:       rol,
 	}
 	json.NewEncoder(w).Encode(respuesta)
