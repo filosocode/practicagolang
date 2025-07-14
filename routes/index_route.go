@@ -2,6 +2,7 @@ package routes
 
 import (
 	"github.com/filosocode/practicagolang/controllers"
+	"github.com/filosocode/practicagolang/middleware"
 	"github.com/gorilla/mux"
 )
 
@@ -12,22 +13,23 @@ func InitRouter() *mux.Router {
 	api.HandleFunc("", controllers.GetInitRoute).Methods("GET")
 
 	apiRoles := api.PathPrefix("/roles").Subrouter()
-	apiRoles.HandleFunc("", controllers.GetRoles).Methods("GET")
-	apiRoles.HandleFunc("/{id}", controllers.GetRol).Methods("GET")
-	apiRoles.HandleFunc("/{id}", controllers.UpdateRol).Methods("PUT")
-	apiRoles.HandleFunc("", controllers.NewRol).Methods("POST")
-	apiRoles.HandleFunc("/{id}", controllers.DeleteRol).Methods("DELETE")
+	apiRoles.HandleFunc("", middleware.SetMiddlewareAuthentication(controllers.GetRoles)).Methods("GET")
+	apiRoles.HandleFunc("/{id}", middleware.SetMiddlewareAuthentication(controllers.GetRol)).Methods("GET")
+	apiRoles.HandleFunc("/{id}", middleware.SetMiddlewareAuthentication(controllers.UpdateRol)).Methods("PUT")
+	apiRoles.HandleFunc("", middleware.SetMiddlewareAuthentication(controllers.NewRol)).Methods("POST")
+	apiRoles.HandleFunc("/{id}", middleware.SetMiddlewareAuthentication(controllers.DeleteRol)).Methods("DELETE")
 
 	apiUsuarios := api.PathPrefix("/usuarios").Subrouter()
-	apiUsuarios.HandleFunc("", controllers.GetUsuarios).Methods("GET")
-	apiUsuarios.HandleFunc("/{id}", controllers.GetUsuario).Methods("GET")
-	apiUsuarios.HandleFunc("/{id}", controllers.UpdateUsuario).Methods("PUT")
-	apiUsuarios.HandleFunc("", controllers.NewUsuario).Methods("POST")
-	apiUsuarios.HandleFunc("/{id}", controllers.DeleteUsuario).Methods("DELETE")
+	apiUsuarios.HandleFunc("", middleware.SetMiddlewareAuthentication(controllers.GetUsuarios)).Methods("GET")
+	apiUsuarios.HandleFunc("/{id}", middleware.SetMiddlewareAuthentication(controllers.GetUsuario)).Methods("GET")
+	apiUsuarios.HandleFunc("/{id}", middleware.SetMiddlewareAuthentication(controllers.UpdateUsuario)).Methods("PUT")
+	apiUsuarios.HandleFunc("", middleware.SetMiddlewareAuthentication(controllers.NewUsuario)).Methods("POST")
+	apiUsuarios.HandleFunc("/{id}", middleware.SetMiddlewareAuthentication(controllers.DeleteUsuario)).Methods("DELETE")
 
 	apiAuth := api.PathPrefix("/auth").Subrouter()
 
-	apiAuth.HandleFunc("/loin", controllers.Login).Methods("POST")
+	apiAuth.HandleFunc("/login", controllers.Login).Methods("POST")
+	apiAuth.HandleFunc("/register", controllers.NewUsuario).Methods("POST")
 
 	return rutas
 }

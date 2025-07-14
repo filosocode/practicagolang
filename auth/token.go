@@ -16,7 +16,7 @@ func GenerarToken(correo string) (string, error) {
 	claims := jwt.MapClaims{}
 	claims["id"] = correo
 	claims["autorized"] = true
-	claims["exp"] = time.Now().Add(time.Minute * 1).Unix()
+	claims["exp"] = time.Now().Add(24 * time.Hour).Unix()
 
 	// CORREGIDO: usar método de firma compatible con clave secreta
 	jwtToken := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
@@ -28,9 +28,9 @@ func ValidarToken(r *http.Request) (string, error) {
 	jwtToken := ExtraerToken(r)
 
 	token, err := jwt.Parse(jwtToken, func(token *jwt.Token) (interface{}, error) {
-		// CORREGIDO: typo y verificación correcta del método
+
 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
-			return nil, fmt.Errorf("metodo de firma inesperado: %v", token.Header["alg"])
+			return nil, fmt.Errorf("metodo de firma inesperado: %s", token.Header["alg"])
 		}
 		return []byte(os.Getenv("API_SECRET")), nil
 	})
@@ -42,7 +42,6 @@ func ValidarToken(r *http.Request) (string, error) {
 	if claims, ok := token.Claims.(jwt.MapClaims); ok && token.Valid {
 		Pretty(claims)
 
-		// CORREGIDO: devolver el ID del claim
 		if id, ok := claims["id"].(string); ok {
 			return id, nil
 		}
@@ -67,7 +66,6 @@ func ExtraerToken(r *http.Request) string {
 		return token
 	}
 
-	// CORREGIDO: typo en el header
 	tokenString := r.Header.Get("Authorization")
 	if len(strings.Split(tokenString, " ")) == 2 {
 		return strings.Split(tokenString, " ")[1]
